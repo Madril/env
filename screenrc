@@ -26,3 +26,7 @@ escape ^ka
 # utf8
 setenv LC_CTYPE en_US.UTF-8
 defutf8 on
+
+# default screens
+screen -t top 0 top
+screen -t zsh 1 zsh

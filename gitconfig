@@ -1,6 +1,6 @@
 [user]
-  name = Artur Ventura
-  email = artur.ventura@gmail.com
+  name = Miguel Nogueira
+  email = me@miguelnogueira.com
 [color]
   ui = true
 [push]
@@ -44,3 +44,5 @@
   snapshot = !git stash save "snapshot: $(date)" && git stash apply "stash@{0}"
 [help]
   autocorrect = 1
+[core]
+	excludesfile = /Users/Madril/.gitignore_global

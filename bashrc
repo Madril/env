@@ -1,6 +1,4 @@
 alias grep='grep --color=auto'
-alias z='ls'
-alias d='cd'
 alias vlc='open -a VLC'
 
 if [ -f /etc/bash_completion ]; then
@@ -12,14 +10,10 @@ if [ "$TERM" = "dumb" ]; then
 else
         export PS1='[\[\033[01;32m\]\u@\h \[\033[34;34m\]\w\[\033[00m\]]\[$(tput setaf 1)\]\[$(tput sgr0)\]: '
 fi
-export EDITOR="nano"
-export CVSEDITOR="nano"
+export EDITOR="emacs -nw"
+export CVSEDITOR="emacs -nw"
 
 export PATH
-
-alias p="python manage.py"
-alias src="source ../bin/activate"
-
 
 #!/bin/bash
 #

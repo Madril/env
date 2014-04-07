@@ -106,11 +106,11 @@ get_user(){
 
 get_user(){
   local result="";
-  if [[ $LOGNAME != "nurv" ]]; then
+  if [[ $LOGNAME != "Madril" ]]; then
     result="$result%USERNAME"
   fi
 
-  if [[ $LOGNAME != "nurv" && -n $SSH_CONNECTION ]]; then
+  if [[ $LOGNAME != "Madril" && -n $SSH_CONNECTION ]]; then
     result="$result@"
   fi
 

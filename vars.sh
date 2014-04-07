@@ -6,16 +6,16 @@ export LS_COLORS='di=34;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43
 export GREP_COLOR='1;33'
 export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/usr/local/mysql/lib/
 export JAVA_OPTS="-server -Xms256m -Xmx1024m -XX:PermSize=384m"
-export GPGKEY=B621B2CE
+#export GPGKEY=B621B2CE
 export MAVEN_OPTS="$JAVA_OPTS -Dorg.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING=false"
 
 #editor
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='nano'
+  export EDITOR='emacs -nw'
 else
   if [[ $TERM == "xterm" || $TERM == "xterm-color" || $TERM == "rxvt" ]]; then
-    alias EDITOR='nano'
+    alias EDITOR='emacs -nw'
   else
-    alias EDITOR='nano'
+    alias EDITOR='emacs -nw'
   fi
 fi

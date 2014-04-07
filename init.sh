@@ -43,6 +43,10 @@ if [[ ! -d "$HOME/.env" ]]; then
       mv "$HOME/.gitconfig" "$HOME/.gitconfig.old"
     fi
 
+    if [ -f "$HOME/.gitignore_global" ]; then
+      mv "$HOME/.gitignore_global" "$HOME/.gitignore_global"
+    fi
+
     if [ -f "$HOME/.screenrc" ]; then
       mv "$HOME/.screenrc" "$HOME/.screenrc.old"
     fi
@@ -60,6 +64,7 @@ if [[ ! -d "$HOME/.env" ]]; then
     ln -s "$HOME/.env/bashrc" "$HOME/.bashrc"
     ln -s "$HOME/.env/bashrc" "$HOME/.bash_profile"
     ln -s "$HOME/.env/gitconfig" "$HOME/.gitconfig"
+    ln -s "$HOME/.env/gitignore_global" "$HOME/.gitignore_global"
     ln -s "$HOME/.env/screenrc" "$HOME/.screenrc"
     ln -s "$HOME/.env/emacs" "$HOME/.emacs"
     ln -s "$HOME/.env/emacs.d" "$HOME/.emacs.d"
