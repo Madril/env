@@ -95,7 +95,7 @@ bureau_git_prompt () {
 
 local host_path="%B%F{green}%m%f%b"
 current_dir(){
-  echo "%B%F{blue}${PWD/#$HOME/~}%f%b"
+  echo "%B%F{cyan}${PWD/#$HOME/~}%f%b"
 }
 
 get_user(){

@@ -48,3 +48,6 @@
 	excludesfile = /Users/Madril/.gitignore_global
 [http]
 	sslVerify = true
+	sslVerify = true
+	sslVerify = false
+	sslVerify = true
