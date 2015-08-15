@@ -182,5 +182,8 @@ precmd(){
   __prompt_command
 }
 
+alias fuck='$(thefuck $(fc -ln -1))'
+# You can use whatever you want as an alias, like for mondays:
+alias FUCK='fuck'
 
 source "$HOME/.env/common.sh"
