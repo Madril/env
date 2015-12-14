@@ -15,7 +15,7 @@ if [[ ! -d "$HOME/.env" ]]; then
     fi
 
     echo "Cloning env folder"
-    git clone https://github.com/nurv/env.git .env > /dev/null
+    git clone https://github.com/madril/env.git .env > /dev/null
 
     if [ ! -d "$ZSH" ]; then
       echo "Cloning oh my zsh"
