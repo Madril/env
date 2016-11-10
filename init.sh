@@ -1,12 +1,10 @@
-pushd $HOME > /dev/null
-
 platform='unknown'
 unamestr=`uname`
 
-if [[ ! -d "$HOME/.env" ]]; then
-    if [[ "$unamestr" == 'Linux' ]]; then
+if [ ! -d "$HOME/.env" ]; then
+    if [ "$unamestr" == 'Linux' ]; then
        platform='linux'
-    elif [[ "$unamestr" == 'Darwin' ]]; then
+    elif [ "$unamestr" == 'Darwin' ]; then
        platform='darwin'
     fi
 
@@ -44,10 +42,14 @@ if [[ ! -d "$HOME/.env" ]]; then
     fi
 
     if [ -f "$HOME/.gitignore_global" ]; then
-      mv "$HOME/.gitignore_global" "$HOME/.gitignore_global"
+      mv "$HOME/.gitignore_global" "$HOME/.gitignore_global.old"
     fi
 
     if [ -f "$HOME/.screenrc" ]; then
+      mv "$HOME/.screenrc" "$HOME/.screenrc.old"
+    fi
+    
+    if [ -f "$HOME/.tmux.conf" ]; then
       mv "$HOME/.screenrc" "$HOME/.screenrc.old"
     fi
 
@@ -66,6 +68,7 @@ if [[ ! -d "$HOME/.env" ]]; then
     ln -s "$HOME/.env/gitconfig" "$HOME/.gitconfig"
     ln -s "$HOME/.env/gitignore_global" "$HOME/.gitignore_global"
     ln -s "$HOME/.env/screenrc" "$HOME/.screenrc"
+    ln -s "$HOME/.env/tmux.conf" "$HOME/.tmux.conf"
     ln -s "$HOME/.env/emacs" "$HOME/.emacs"
     ln -s "$HOME/.env/emacs.d" "$HOME/.emacs.d"
 
@@ -73,5 +76,3 @@ else
     echo "You have a env. Trying to update"
     upenv
 fi
-
-popd > /dev/null
