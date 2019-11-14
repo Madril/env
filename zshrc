@@ -12,7 +12,7 @@ setopt extended_history
 setopt hist_expire_dups_first
 setopt hist_ignore_space
 
-plugins=(textmate python git brew  git-extras git-flow mvn osx pip django sublime textmate)
+plugins=(python git z git-extras git-flow pip django docker)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -106,11 +106,11 @@ get_user(){
 
 get_user(){
   local result="";
-  if [[ $LOGNAME != "Madril" ]]; then
+  if [[ $LOGNAME != "madril" ]]; then
     result="$result%USERNAME"
   fi
 
-  if [[ $LOGNAME != "Madril" && -n $SSH_CONNECTION ]]; then
+  if [[ $LOGNAME != "madril" && -n $SSH_CONNECTION ]]; then
     result="$result@"
   fi
 
@@ -138,14 +138,6 @@ _get_virtualenv(){
   fi
 }
 
-_get_pom(){
-  POM=$(command perl -I ~/.env "$HOME/.env/getpom.pl")
-  if [ -z "$POM" ]; then
-      echo ""
-  else
-      echo " %F{yellow}⬡ `basename \"$POM\"`%f"
-  fi
-}
 
 function set_prompt_symbol () {
   if [ $RETURN_STATUS -eq 0 ]; then
@@ -166,12 +158,12 @@ has_jobs(){
 
 function __prompt_command(){
   RETURN_STATUS=$?
-  local hud="$(get_host)$(current_dir)$(bureau_git_prompt)$(_get_virtualenv)$(_get_pom)"
+  local hud="$(get_host)$(current_dir)$(bureau_git_prompt)$(_get_virtualenv)"
   if [ "${#hud}" -gt $(($COLUMNS + 15*5)) ]; then
-    PS1='╭ $(get_host)$(current_dir)$(bureau_git_prompt)$(_get_virtualenv)$(_get_pom)
+    PS1='╭ $(get_host)$(current_dir)$(bureau_git_prompt)$(_get_virtualenv)
 ╰$(set_prompt_symbol) '
   else
-    PS1='[$(get_host)$(current_dir)$(has_jobs)$(bureau_git_prompt)$(_get_virtualenv)$(_get_pom)]: '
+    PS1='[$(get_host)$(current_dir)$(has_jobs)$(bureau_git_prompt)$(_get_virtualenv)]: '
   fi
 }
 
