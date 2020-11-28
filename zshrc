@@ -179,3 +179,9 @@ alias fuck='$(thefuck $(fc -ln -1))'
 alias FUCK='fuck'
 
 source "$HOME/.env/common.sh"
+
+
+if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" != "" ]; then
+  tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
+fi
+
