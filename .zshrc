@@ -3,7 +3,6 @@
 
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/madril/.oh-my-zsh"
-export LC_ALL="en_US.UTF-8"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -69,7 +68,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git macos web-search z zsh-autosuggestions zsh-syntax-highlighting aws jira brew python pip cli)
+plugins=(git macos web-search z zsh-autosuggestions zsh-syntax-highlighting aws jira)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -103,10 +102,3 @@ export PATH="/usr/local/sbin:$GOPATH/bin:$PATH"
 export PATH="/usr/local/opt/python@3.7/bin:$PATH"
 export PATH="/usr/local/opt/openjdk@11/bin:$PATH"
 alias brewup='brew update; brew upgrade; brew cleanup -s; brew doctor'
-alias gcm='git checkout master'
-alias gcnb='git checkout -b'
-alias gc='git checkout'
-alias gp='git pull'
-alias gpush='git push'
-alias b64='pbpaste | base64 -D'
-alias gcmp='git checkout master && git pull'
