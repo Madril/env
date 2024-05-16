@@ -1,112 +1,339 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+# =======
+# GLOBALS
+# =======
 
-# Path to your oh-my-zsh installation.
-export ZSH="/Users/madril/.oh-my-zsh"
-export LC_ALL="en_US.UTF-8"
+PROFILE_STARTUP=false
+if [[ "$PROFILE_STARTUP" == true ]]; then
+    # http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
+    PS4=$'%D{%M%S%.} %N:%i> '
+    exec 3>&2 2>$HOME/tmp/startlog.$$
+    setopt xtrace prompt_subst
+fi
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+LIBRARY=$HOME/Scripts
+DOTFILES=$LIBRARY/dotfiles
 
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+if [[ "$(uname)" == "Darwin" ]]; then
+    platform="Darwin"
+    LIBRARY=$HOME/Scripts
+    DOTFILES=$LIBRARY/dotfiles
+elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
+    platform="Linux"
+else
+    platform="POSIX"
+fi
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
 
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+# ===========================
+# LOCALE, TERMINAL AND COLORS
+# ===========================
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+export LC_CTYPE=en_US.UTF-8
+export LANG=en_US.UTF-8
 
-# Uncomment the following line to automatically update without prompting.
-# DISABLE_UPDATE_PROMPT="true"
+autoload -Uz colors && colors
 
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+    xterm-color|*-256color) color_prompt=yes;;
+esac
 
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS=true
+if [[ "$color_prompt" = yes ]]; then
+    case $platform in
+        "Darwin")
+            PS1="%{$fg_bold[cyan]%}%n@%m%{%f%}:%{$fg_bold[magenta]%}%~%{$reset_color%}%# "
+            ;;
+        "Linux")
+            PS1="%{$fg_bold[green]%}%n@%m%{%f%}:%{$fg_bold[blue]%}%~%{$reset_color%}%# "
+            ;;
+    esac
+else
+    PS1="%n@%m:%~%# "
+fi
+unset color_prompt
 
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
+# If this is an xterm set the title to user@host:dir
+case $TERM in
+xterm*|rxvt*)
+    precmd () {print -Pn "\e]0;%n@%m:%~%#\a"}
+    ;;
+*)
+    ;;
+esac
 
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+export LS_OPTIONS='--color=auto'
 
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
+case $platform in
+    "Darwin")
+        export CLICOLOR=1
+        export LSCOLORS="gxcxfxdacxDaDaxbadacex"
+        alias grep='grep --colour=auto'
+        alias fgrep='fgrep --colour=auto'
+        alias egrep='egrep --colour=auto'
+        ;;
+    "Linux")
+        export LS_COLORS="di=36;40:ln=32;40:so=35;40:pi=33;40:ex=32;40:bd=1;33;40:cd=1;33;40:su=0;41:sg=0;43:tw=0;42:ow=34;40:"
+        eval "$(dircolors -b)" 
+        alias ls='ls --color'
+        alias grep='grep --color=auto'
+        alias fgrep='fgrep --color=auto'
+        alias egrep='egrep --color=auto'
+        ;;
+esac
 
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+# =================
+# EDITING & HISTORY
+# =================
 
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
+setopt histignorealldups sharehistory
 
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
+# Use emacs keybindings even if our EDITOR is set to vi
+bindkey -e
 
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
+# Keep 1000 lines of history within the shell and save it to ~/.zsh_history:
+HISTSIZE=10000
+SAVEHIST=10000
+HISTFILESIZE=10000
+HISTFILE=~/.zsh_history
 
-# Which plugins would you like to load?
-# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(git macos web-search z zsh-autosuggestions zsh-syntax-highlighting aws jira brew python pip cli)
+# =================
+# SHELL COMPLETION
+# =================
+# Use modern completion system
 
-source $ZSH/oh-my-zsh.sh
+export FPATH=/usr/local/share/zsh-completions:$FPATH
+autoload -Uz compinit && compinit -i # ignore permission differences in macOS/brew
 
-# User configuration
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:*:*:*:descriptions' format '%F{green}-- %d --%f'
+zstyle ':completion:*:*:*:*:corrections' format '%F{yellow}!- %d (errors: %e) -!%f'
+zstyle ':completion:*' auto-description 'specify: %d'
+zstyle ':completion:*' completer _expand _extensions _complete _correct _approximate
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' menu select
+zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+zstyle ':completion:*' matcher-list '' 'm:{a-z}={A-Z}' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=* l:|=*'
+zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
+zstyle ':completion:*' use-compctl false
+zstyle ':completion:*' verbose true
+zstyle ':completion:*' use-cache on
 
-# export MANPATH="/usr/local/man:$MANPATH"
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+case $platform in
+    "Darwin")
+        zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,comm'
+        ;;
+    "Linux")
+        zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+        ;;
+esac
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
+autoload -U +X bashcompinit && bashcompinit # Bash completion compatibility
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-export GOPATH="/Users/madril/go"
-export PATH="/usr/local/sbin:$GOPATH/bin:$PATH"
-export PATH="/usr/local/opt/python@3.7/bin:$PATH"
-export PATH="/usr/local/opt/openjdk@11/bin:$PATH"
-alias brewup='brew update; brew upgrade; brew cleanup -s; brew doctor'
+# Azure CLI completion
+# (you should have run activate-global-python-argcomplete --user first)
+[ -e $HOME/.bash_completion.d/python-argcomplete.sh ] && source $HOME/.bash_completion.d/python-argcomplete.sh
+[ $(type register-python-argcomplete > /dev/null 2>&1) ] && eval "$(register-python-argcomplete az)"
+export FUNCTIONS_CORE_TOOLS_TELEMETRY_OPTOUT=true
+export DOTNET_CLI_TELEMETRY_OPTOUT=true
+
+# =================
+# LANGUAGE RUNTIMES
+# =================
+
+# Python
+
+# Handle tools installed with pip3 install --user (update this with every macOS release)
+if [ -d $HOME/Library/Python/3.11/bin ]; then
+    export PATH="$HOME/Library/Python/3.11/bin:$PATH"
+fi
+
+# brew-driven installs
+if [ -d $HOME/.pyenv ]; then
+    # Check ~/.zprofile for other exports
+    export PATH="$HOME/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)" 
+
+    # Enable building pypy and others via brew
+    case $platform in
+        "Darwin")
+        #export CFLAGS="-I$(brew --prefix openssl)/include -I$(brew --prefix bzip2)/include -I$(brew --prefix readline)/include -I$(xcrun --show-sdk-path)/usr/include"
+        #export LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix bzip2)/lib -L$(brew --prefix readline)/lib" 
+        #export CFLAGS="-I/usr/local/opt/openssl@1.1/include -I/usr/local/opt/bzip2/include -I/usr/local/opt/readline/include -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include"
+        #export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib -L/usr/local/opt/bzip2/lib -L/usr/local/opt/readline/lib"
+        export CFLAGS="$CFLAGS -I/opt/homebrew/include" # -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include $CFLAGS"
+        export LDFLAGS="$LDFLAGS -L/opt/homebrew/lib"
+        ;;
+    esac
+fi
+
+if [ -d $HOME/.local/bin ]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
+# NodeJS
+
+# brew-driven installs
+if [ -d $HOME/.nodenv ]; then
+    eval "$(nodenv init -)"
+    # Drop platform-specific tweaks here
+    case $platform in
+         "Darwin")
+         ;;
+    esac
+fi
+
+# Java (OpenJDK from brew)
+case $platform in
+    "Darwin")
+    if [ -d /opt/homebrew/opt/openjdk ]; then
+        export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+        export CPPFLAGS="-I/opt/homebrew/opt/openjdk/include"
+    fi
+    ;;
+esac
+
+# Golang
+if [ -d /usr/local/go ]; then
+    export PATH=$PATH:/usr/local/go/bin
+fi
+export GOPATH=$LIBRARY/gocode
+export PATH=$PATH:$GOPATH/bin
+export GOPRIVATE=*.worten.net
+
+# NodeJS
+NPM_PACKAGES=$LIBRARY/npm-packages
+if [ -d $NPM_PACKAGES ]; then
+    npm config set prefix $NPM_PACKAGES
+    # Make private binaries take precedence
+    export PATH=$NPM_PACKAGES/bin:$PATH
+
+    # Unset manpath so we can inherit from /etc/manpath via the `manpath` command
+    unset MANPATH # delete if you already modified MANPATH elsewhere in your config
+    export MANPATH="$NPM_PACKAGES/share/man:$(manpath)"
+fi
+export NODE_PATH=$NODE_PATH:/usr/local/lib/node
+export PATH=$PATH:/usr/local/share/npm/bin
+
+# Rust
+if [ -d $HOME/.cargo ]; then
+  export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
+# Lua
+if [ -d $HOME/.luarocks ]; then
+  export PATH="$HOME/.luarocks/bin:$PATH"
+fi
+
+# Generic binaries
+
+if [ -d $HOME/.bin ]; then
+  export PATH="$HOME/.bin:$PATH"
+fi
+
+# =============
+# DOCKER IN WSL
+# =============
+
+case $platform in
+    "Linux")
+        # this assumes you have "$USER ALL=(ALL) NOPASSWD: /usr/bin/dockerd" in /etc/sudoers.d/docker
+        if [ -d /mnt/c ]; then
+            export LIBGL_ALWAYS_INDIRECT=1
+            #export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2>/dev/null):0
+            if [ -z `pidof dockerd` ]; then
+                echo "Starting docker daemon in background."
+                sudo dockerd > /dev/null 2>&1 &
+                disown
+            fi
+        fi
+        ;;
+esac
+
+# =======
+# ALIASES
+# =======
+
+export EDITOR=emacs
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
+case $platform in
+    "Darwin")
+        alias flush-dns-cache="echo 'su - admin\nsudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'"
+        alias brew="echo 'REMEMBER TO RUN HOMEBREW AS ADMIN'"
+        export PATH=$PATH:/Aplications/Xcode.app/Contents/Developer/usr/bin:/Library/Developer/CommandLineTools/usr/bin
+        alias code='open -a Visual\ Studio\ Code "$@"'
+        alias tt='open -a Textastic "$@"'
+        alias brewup='su wrtadmin -c "brew update; brew upgrade; brew cleanup -s; brew doctor"'
+
+        # Go from brew
+        export PATH=$PATH:/usr/local/opt/go/libexec/bin
+
+        # Clipboard
+        test -z "$(type -p putclip)" -a -n "$(type -p pbcopy)"  && alias putclip=pbcopy
+        test -z "$(type -p getclip)" -a -n "$(type -p pbpaste)" && alias getclip=pbpaste
+        ;;
+    "Linux")
+        alias flush-dns-cache='sudo systemd-resolve --flush-caches'
+        alias resync-wsl-clock='sudo hwclock -s'
+        alias resync-clock='sudo ntpdate pool.ntp.org'
+        alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+        [ -x /usr/bin/keychain ] && [ -z ${DISPLAY+x} ] && eval `keychain --agents ssh --eval id_rsa --quiet -Q` 
+
+        # Clipboard
+        if [ -n "$(type -p xclip)" ]; then
+            test -z "$(type -p putclip)"  && alias putclip="$(type -p xclip) -sel clip -i"
+            test -z "$(type -p getclip)"  && alias getclip="$(type -p xclip) -sel clip -o"
+            alias xclip='xclip -sel clip'
+        fi
+        if [ -c /dev/clipboard -a -w /dev/clipboard ]; then
+            test -z "$(type -p getclip)"  &&  alias getclip="cat   /dev/clipboard"
+            test -z "$(type -p putclip)"  &&  alias putclip="cat > /dev/clipboard"
+        fi
+        ;;
+esac
+
+unset platform
+
 alias gcm='git checkout master'
 alias gcnb='git checkout -b'
 alias gc='git checkout'
 alias gp='git pull'
 alias gpush='git push'
+alias gs='git status'
 alias b64='pbpaste | base64 -D'
 alias gcmp='git checkout master && git pull'
+
+# =========
+# PLAN9PORT
+# =========
+
+[ -d /usr/local/plan9 ] && export PLAN9=/usr/local/plan9 && export PATH=$PATH:$PLAN9/bin
+
+# ======
+# EXTRAS
+# ======
+
+# yt-dlp -f 'bv[height=1080][ext=mp4]+ba[ext=m4a]' --embed-metadata --merge-output-format mp4 https://www.youtube.com/watch?v=1La4QzGeaaQ -o '%(id)s.mp4'
+
+
+[ -e $DOTFILES/bin/z.sh ] && source $DOTFILES/bin/z.sh
+[ -e $DOTFILES/man ] && export MANPATH=$MANPATH:$DOTFILES/man
+
+
+if [[ "$PROFILE_STARTUP" == true ]]; then
+    unsetopt xtrace
+    exec 2>&3 3>&-
+fi
+
+# bun completions
+[ -s "/home/me/.bun/_bun" ] && source "/home/me/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
