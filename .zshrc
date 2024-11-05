@@ -133,13 +133,6 @@ esac
 
 autoload -U +X bashcompinit && bashcompinit # Bash completion compatibility
 
-# Azure CLI completion
-# (you should have run activate-global-python-argcomplete --user first)
-[ -e $HOME/.bash_completion.d/python-argcomplete.sh ] && source $HOME/.bash_completion.d/python-argcomplete.sh
-[ $(type register-python-argcomplete > /dev/null 2>&1) ] && eval "$(register-python-argcomplete az)"
-export FUNCTIONS_CORE_TOOLS_TELEMETRY_OPTOUT=true
-export DOTNET_CLI_TELEMETRY_OPTOUT=true
-
 # =================
 # LANGUAGE RUNTIMES
 # =================
