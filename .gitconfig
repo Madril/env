@@ -1,0 +1,19 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+	name = Miguel Nogueira
+	email = mrnogueira@worten.pt
+
+
+[url "ssh://git@git.worten.net/digital/packages"]
+	insteadOf = https://git.worten.net/digital-packages
+[url "ssh://git@git.worten.net/"]
+	insteadOf = https://git.worten.net/
+[url "ssh://git@go.worten.net/"]
+	insteadOf = https://go.worten.net/
+[url "ssh://git@git.worten.net/digital/backend"]
+	insteadOf = https://git.worten.net/digital-backend
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = True
