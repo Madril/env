@@ -17,3 +17,14 @@
 	rebase = true
 [push]
 	autoSetupRemote = True
+
+
+[core]
+	editor = emacs -nw
+
+[includeIf "hasconfig:remote.*.url:git@git.worten.net:**"]
+    path = "~/.gitconfig.worten"
+[includeIf "hasconfig:remote.*.url:git@github.com:**"]
+    path = "~/.gitconfig.general"
+[includeIf "hasconfig:remote.*.url:git@madstore2.*:**"]
+    path = "~/.gitconfig.general"
